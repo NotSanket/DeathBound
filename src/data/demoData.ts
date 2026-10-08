@@ -55,11 +55,11 @@ export const participants: MatchParticipant[] = rows.map(([matchId, teamId, play
 }))
 
 export const tierDefinitions: TierDefinition[] = [
-  { id: 'Bronze', threshold: 0, description: 'Entry clearance for verified arena competitors.', color: '#B47B55' },
-  { id: 'Silver', threshold: 1350, description: 'Consistent combat fundamentals under pressure.', color: '#B7B4A8' },
-  { id: 'Gold', threshold: 1450, description: 'Advanced match impact and reliable conversion.', color: '#D7B56D' },
-  { id: 'Diamond', threshold: 1550, description: 'High-precision decision making across formations.', color: '#AA91F5' },
-  { id: 'Elite', threshold: 1625, description: 'Blacksite command tier. Exceptional competitive output.', color: '#DCFC54' },
+  { id: 'Bronze', threshold: 0, description: 'Entry clearance for verified arena competitors.', color: '#A66F55' },
+  { id: 'Silver', threshold: 1350, description: 'Consistent combat fundamentals under pressure.', color: '#C3BEC7' },
+  { id: 'Gold', threshold: 1450, description: 'Advanced match impact and reliable conversion.', color: '#D5B68A' },
+  { id: 'Diamond', threshold: 1550, description: 'High-precision decision making across formations.', color: '#A8C9C3' },
+  { id: 'Elite', threshold: 1625, description: 'Blacksite command tier. Exceptional competitive output.', color: '#A89CC7' },
 ]
 
 export const arenaMaps: ArenaMap[] = [

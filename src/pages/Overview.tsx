@@ -15,7 +15,7 @@ export function Overview() {
     <div className={`blacksite-overview ${focusMode ? 'is-focused' : ''}`}>
       <header className="blacksite-briefing">
         <div className="briefing-code"><span>DB</span><strong>01</strong><i /></div>
-        <div className="briefing-copy"><span className="overline">Arena operations // Blacksite intelligence</span><h1>Combat<br /><em>overview</em></h1><p>Completed 3v3 records distilled into competitive intelligence.</p></div>
+        <div className="briefing-copy"><span className="overline">Arena operations // Vanta Rose intelligence</span><h1>Combat<br /><em>overview</em></h1><p>Completed 3v3 records distilled into competitive intelligence.</p></div>
         <div className="briefing-command">
           <div className="target-mark" aria-hidden="true"><Crosshair /><span>3V3</span></div>
           <dl><div><dt>Operation</dt><dd>GENESIS // 01</dd></div><div><dt>Data mode</dt><dd>LOCAL SIMULATION</dd></div><div><dt>Integrity</dt><dd>6 / 6 VERIFIED</dd></div></dl>
@@ -46,7 +46,7 @@ export function Overview() {
         <CombatActivity selectedId={selectedMatch.id} onSelect={(match) => selectMatch(match.id)} />
       </div>
 
-      <footer className="blacksite-footer"><span>DEATHBOUND // BLACKSITE COMPETITIVE INTELLIGENCE</span><span>PHASE 1.5 // SIMULATED DATA // {matches.length} VERIFIED RECORDS</span></footer>
+      <footer className="blacksite-footer"><span>DEATHBOUND // VANTA ROSE COMPETITIVE INTELLIGENCE</span><span>PHASE 1.7 // SIMULATED DATA // {matches.length} VERIFIED RECORDS</span></footer>
     </div>
   )
 }

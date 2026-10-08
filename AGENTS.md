@@ -2,7 +2,7 @@
 
 ## Product context
 
-DEATHBOUND is a premium competitive client and analytics ecosystem for a fictional 3v3 FPS. It is not the playable game. The current release is Phase 1.5: **BLACKSITE**, an industrial competitive-intelligence workspace built on deterministic local demo records.
+DEATHBOUND is a premium competitive client and analytics ecosystem for a fictional 3v3 FPS. It is not the playable game. The current release is Phase 1.7: **VANTA ROSE**, a mature luxury-esports intelligence workspace built on deterministic local demo records.
 
 ## Stack
 
@@ -24,18 +24,18 @@ DEATHBOUND is a premium competitive client and analytics ecosystem for a fiction
 - Pages compose components and own route-level presentation only.
 - Never hardcode duplicate performance statistics in presentation components; derive them from match participants.
 
-## Blacksite design conventions
+## Vanta Rose design conventions
 
-- Art direction: industrial editorial brutalism, combat HUD precision, and premium esports broadcast graphics.
-- Carbon `#0D0D0B` and graphite `#181815` are primary surfaces. Do not reintroduce navy as a primary surface.
-- Warm ivory `#F1ECDD` is the high-contrast editorial surface.
-- Chartreuse `#DCFC54` marks active controls, targets, and selected states.
-- Combat orange `#FF6547` marks decisive competitive information and victory emphasis.
-- Rank violet `#AA91F5` is reserved for ascension and elite-rank context.
-- Championship gold `#D7B56D` marks prestige and MVP treatment.
+- Art direction: combat HUD precision, dark editorial luxury, and premium esports broadcast graphics.
+- Vanta `#100F12`, smoked plum `#19151B`, and layered plum surfaces dominate the interface.
+- Pearl `#F0EAF0`, soft mauve, and muted mauve provide text hierarchy without pale panel blocks.
+- Vanta Rose `#D56784` marks identity, active navigation, selected records, and primary competitive emphasis.
+- Sea Glass `#92B9B0` marks victories, positive performance, and tactical intelligence.
+- Champagne `#D5B68A` is reserved for MVP and elite prestige.
+- Muted Orchid `#A89CC7` is used sparingly for advanced analytics and rank support.
 - Space Grotesk is interface text, Saira Condensed is display/score typography, and IBM Plex Mono is technical metadata.
-- Preserve the 78px compact command rail, angular active treatments, asymmetric composition, mixed surface densities, and the ivory Arena centerpiece.
-- Avoid generic rounded cards, glassmorphism, blue SaaS styling, decorative fake telemetry, random gradients, and controls without behavior.
+- Preserve the 78px compact command rail, precise active treatments, asymmetric composition, mixed surface densities, and dark Arena centerpiece.
+- Avoid fluorescent chartreuse/orange, large pale surfaces, generic rounded cards, glassmorphism, blue SaaS styling, decorative fake telemetry, random gradients, and controls without behavior.
 - Motion must communicate selection, hierarchy, or state; always respect reduced-motion preferences.
 
 ## Interaction contracts

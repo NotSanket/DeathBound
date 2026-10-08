@@ -1,6 +1,6 @@
 # DEATHBOUND
 
-Phase 1.5 **BLACKSITE** frontend for a fictional 3v3 competitive FPS analytics ecosystem. The locally runnable client combines an editorial Arena scoreboard, synchronized tactical map intelligence, player dossiers, rank ascension, derived combat telemetry, a searchable command palette, focus mode, responsive navigation, deterministic demo data, and intentionally staged Phase 2 routes.
+Phase 1.7 **VANTA ROSE** frontend for a fictional 3v3 competitive FPS analytics ecosystem. The locally runnable client combines a premium dark esports Arena scoreboard, synchronized tactical map intelligence, player dossiers, rank ascension, derived combat telemetry, a searchable command palette, focus mode, responsive navigation, deterministic demo data, and intentionally staged Phase 2 routes.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ npm run preview
 
 ```text
 src/
-  components/       Blacksite shell, systems, branding, and arena modules
+  components/       Application shell, systems, branding, and arena modules
   context/          Shared match, dossier, command, and focus state
   data/             Typed domain models, deterministic records, and derivations
   pages/            Overview and Phase 2 placeholders
@@ -40,7 +40,7 @@ docs/
 
 Phase 1 remains frontend-only. It does not connect to Supabase, authenticate users, submit matches, or implement a playable game. Every displayed performance metric is calculated from shared demo match records and is explicitly labeled as simulated data.
 
-## Blacksite controls
+## Vanta Rose controls
 
 - Press `Ctrl+K` or `Cmd+K` to search routes, competitors, match records, and interface commands.
 - Select any scoreboard or leaderboard competitor to open their dossier.

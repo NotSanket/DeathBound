@@ -1,24 +1,34 @@
-# DEATHBOUND // BLACKSITE Design System
+# DEATHBOUND // VANTA ROSE Design System
 
 ## Creative doctrine
 
-BLACKSITE combines industrial editorial brutalism, futuristic combat-HUD precision, and premium competitive broadcast graphics. Visual impact comes from scale, contrast, typography, thin rules, information hierarchy, and purposeful interaction—not decorative glow or repeated dashboard cards.
+VANTA ROSE combines editorial combat-HUD precision with mature luxury esports presentation. Rich smoked-plum surfaces dominate the composition; rose, sea-glass, champagne, and orchid are sparse semantic signals. Visual impact comes from scale, tonal depth, typography, one-pixel rules, information hierarchy, and purposeful interaction rather than decorative glow or repeated dashboard cards.
 
 ## Color system
 
 | Token | Value | Semantic role |
 |---|---:|---|
-| Carbon | `#0D0D0B` | Application field and deepest contrast |
-| Graphite | `#181815` | Primary dark modules |
-| Dark surface | `#22221F` | Raised controls and supporting structures |
-| Warm ivory | `#F1ECDD` | Arena centerpiece and dominant editorial contrast |
-| Muted bone | `#B7B4A8` | Supporting text and inactive identity |
-| Electric chartreuse | `#DCFC54` | Selection, navigation, targets, progress, active commands |
-| Combat orange | `#FF6547` | Victory emphasis, score priority, tactical intensity |
-| Rank violet | `#AA91F5` | Rank inspection and ascension context |
-| Championship gold | `#D7B56D` | MVP and prestige |
+| `--db-bg` | `#100F12` | Primary application field |
+| `--db-bg-secondary` | `#19151B` | Deep smoked-plum modules |
+| `--db-surface` | `#262127` | Primary panel surface |
+| `--db-surface-elevated` | `#302932` | Raised controls and panel headers |
+| `--db-surface-hover` | `#3B303B` | Restrained interactive hover |
+| `--db-border` | `#403640` | Hairline structure |
+| `--db-border-strong` | `#594653` | Strong panel separation |
+| `--db-text` | `#F0EAF0` | Pearl primary text |
+| `--db-text-secondary` | `#AC9FA9` | Supporting interface text |
+| `--db-text-muted` | `#8E838D` | Metadata and inactive identity |
+| `--db-accent-primary` | `#D56784` | Vanta Rose selection and competitive emphasis |
+| `--db-accent-primary-soft` | `#E6A0B1` | High-value rose highlight |
+| `--db-accent-primary-deep` | `#9D425F` | Filled primary controls |
+| `--db-accent-positive` | `#92B9B0` | Victory and positive performance |
+| `--db-accent-positive-deep` | `#567F78` | Tactical linework and support |
+| `--db-accent-prestige` | `#D5B68A` | MVP and elite prestige |
+| `--db-accent-analytic` | `#A89CC7` | Advanced analytics and rank context |
 
-Color is semantic. Chartreuse never means defeat; orange is not used as ambient decoration; violet stays within ranked systems; gold remains scarce.
+Color is semantic. Rose marks identity, active navigation, selected records, and primary competitive values. Sea glass marks victory and positive performance. Champagne stays scarce and prestigious. Orchid is limited to advanced analytics and ranked support. Neutral surfaces must dominate every viewport.
+
+Tier metals remain distinct: muted copper for Bronze, cool platinum for Silver, champagne for Gold, icy sea glass for Diamond, and champagne/orchid context for Elite.
 
 ## Typography
 
@@ -32,9 +42,9 @@ Color is semantic. Chartreuse never means defeat; orange is not used as ambient 
 
 - Desktop navigation uses a 78px fixed command rail with hover/focus descriptions.
 - The top command strip owns current section, selected match, demo status, command access, and focus mode.
-- The Arena is the primary visual object and uses a warm ivory surface against the carbon field.
-- Map intelligence uses dark technical density and original schematic geometry.
-- Leaderboard, rank progression, telemetry, and activity each use different visual densities; they must not become interchangeable cards.
+- The Arena is the primary visual object and uses layered graphite-plum surfaces with precise team contrast.
+- Map intelligence uses low-saturation sea-glass linework with rose site markers.
+- Leaderboard, rank progression, telemetry, and activity use distinct visual densities rather than interchangeable cards.
 - Chamfered edges are selective and structural.
 
 ## Core components
@@ -43,25 +53,28 @@ Color is semantic. Chartreuse never means defeat; orange is not used as ambient 
 
 - Exactly two teams and three competitors per team.
 - Match selection updates score, map, teams, MVP, rows, and command-strip context together.
-- Performance bars represent only match eliminations.
+- The winning score receives controlled rose emphasis; victory labels use sea glass.
+- MVP recognition uses champagne and performance bars represent only match eliminations.
 - Every player row is a dossier control.
 
 ### Player dossier
 
 - Global modal drawer with Escape and explicit close controls.
+- Layered plum surfaces, rose identity, champagne rank detail, and sea-glass performance states.
 - Uses calculated lifetime statistics and recent participant records.
 - Performance bars and trends reflect recorded match data.
 
 ### Rank ascension
 
 - Bronze, Silver, Gold, Diamond, and Elite share one geometric insignia language.
-- Complexity increases with tier.
+- Complexity increases with tier while metallic identities remain distinct.
 - Tier inspection explains thresholds without modifying rating.
 - Prototype thresholds are always labeled demonstrative.
 
 ### Combat telemetry
 
 - Rating, K/D, and win-rate series are calculated cumulatively from player match participation.
+- Rating uses rose, positive K/D uses sea glass, and win conversion uses muted orchid.
 - Tooltips, axes, grid lines, unit labels, and metric colors remain explicit.
 
 ### Command palette
@@ -75,7 +88,7 @@ Color is semantic. Chartreuse never means defeat; orange is not used as ambient 
 - Keep transitions under roughly 400ms.
 - Animate only hierarchy, selection, progression, or spatial state.
 - Preserve underlying selection when focus mode changes.
-- Hover states use precision shifts, rules, or color blocking rather than glow.
+- Hover states use surface shifts, fine rules, or restrained color blocking rather than fluorescent glow.
 - Respect `prefers-reduced-motion` globally.
 - All controls require visible keyboard focus and accurate accessible names.
 

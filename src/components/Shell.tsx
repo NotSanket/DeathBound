@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
       <CommandPalette />
       <PlayerDrawer />
-      <div className="shell-corner" aria-hidden="true"><Gauge size={13} /><span>BLACKSITE // GNS-01</span></div>
+      <div className="shell-corner" aria-hidden="true"><Gauge size={13} /><span>VANTA ROSE // GNS-01</span></div>
     </div>
   )
 }

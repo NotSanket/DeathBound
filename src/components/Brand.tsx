@@ -3,11 +3,11 @@ import { useId } from 'react'
 import type { SkillTier } from '../data/models'
 
 const tierColor: Record<SkillTier, string> = {
-  Bronze: '#B47B55',
-  Silver: '#B7B4A8',
-  Gold: '#D7B56D',
-  Diamond: '#AA91F5',
-  Elite: '#DCFC54',
+  Bronze: 'var(--db-tier-bronze, #A66F55)',
+  Silver: 'var(--db-tier-silver, #C3BEC7)',
+  Gold: 'var(--db-accent-prestige, #D5B68A)',
+  Diamond: 'var(--db-tier-diamond, #A8C9C3)',
+  Elite: 'var(--db-accent-analytic, #A89CC7)',
 }
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
@@ -33,7 +33,7 @@ export function RankEmblem({ tier, size = 'medium', label = true }: { tier: Skil
       <svg viewBox="0 0 140 160" role="img" aria-label={`${tier} competitive rank insignia`}>
         <defs>
           <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="1">
-            <stop stopColor="#F1ECDD" stopOpacity=".88" />
+            <stop stopColor="var(--db-text, #F0EAF0)" stopOpacity=".9" />
             <stop offset=".32" stopColor={color} />
             <stop offset="1" stopColor={color} stopOpacity=".48" />
           </linearGradient>

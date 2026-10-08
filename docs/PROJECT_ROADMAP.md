@@ -6,7 +6,7 @@ Every gameplay performance record comes from a completed 3v3 match. Submitted da
 
 ## Phase 1 — Visual Foundation
 
-Status: implemented and evolved through Phase 1.5 BLACKSITE. Establish the identity, compact application shell, responsive design system, typed deterministic demo data, synchronized Arena and map intelligence, player dossiers, rank ascension, command palette, focus mode, derived telemetry, and staged application routes.
+Status: implemented and visually refined through Phase 1.7 VANTA ROSE. Establish the identity, compact application shell, responsive design system, typed deterministic demo data, synchronized Arena and map intelligence, player dossiers, rank ascension, command palette, focus mode, derived telemetry, and staged application routes.
 
 ## Phase 2 — Game Client Screens
 
