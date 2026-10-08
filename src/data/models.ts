@@ -68,6 +68,58 @@ export interface LeaderboardEntry extends Player {
   assists: number
   matches: number
   wins: number
+  losses: number
+  kd: number
+  kda: number
+  winRate: number
+  averageKills: number
+}
+
+export interface ArenaDataset {
+  players: Player[]
+  matches: Match[]
+  teams: MatchTeam[]
+  participants: MatchParticipant[]
+}
+
+export interface StoredArenaData extends ArenaDataset {
+  version: 1
+}
+
+export interface ParticipantSubmission {
+  playerId?: string
+  newUsername?: string
+  kills: number
+  deaths: number
+  assists: number
+}
+
+export interface MatchSubmission {
+  id: string
+  playedAt: string
+  map: string
+  durationSeconds: number
+  teamAName: string
+  teamBName: string
+  teamAScore: number
+  teamBScore: number
+  teamA: ParticipantSubmission[]
+  teamB: ParticipantSubmission[]
+}
+
+export interface SubmissionResult {
+  dataset: ArenaDataset
+  createdPlayerIds: string[]
+  match: Match
+}
+
+export interface MapPerformance {
+  map: string
+  matches: number
+  wins: number
+  kills: number
+  deaths: number
+  assists: number
   kd: number
   winRate: number
 }

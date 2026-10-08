@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { matches } from '../data/demoData'
+import { useArenaData } from './ArenaDataContext'
 
 interface BlacksiteState {
   selectedMatchId: string
@@ -17,6 +17,7 @@ interface BlacksiteState {
 const BlacksiteContext = createContext<BlacksiteState | null>(null)
 
 export function BlacksiteProvider({ children }: { children: ReactNode }) {
+  const { matches } = useArenaData()
   const [selectedMatchId, setSelectedMatchId] = useState(matches[0].id)
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null)
   const [focusMode, setFocusMode] = useState(false)
@@ -32,6 +33,10 @@ export function BlacksiteProvider({ children }: { children: ReactNode }) {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
+
+  useEffect(() => {
+    if (!matches.some((match) => match.id === selectedMatchId)) setSelectedMatchId(matches[0].id)
+  }, [matches, selectedMatchId])
 
   const value = useMemo<BlacksiteState>(() => ({
     selectedMatchId,
