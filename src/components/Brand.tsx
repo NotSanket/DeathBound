@@ -1,67 +1,57 @@
 import { motion } from 'motion/react'
+import { useId } from 'react'
+import type { SkillTier } from '../data/models'
+
+const tierColor: Record<SkillTier, string> = {
+  Bronze: '#B47B55',
+  Silver: '#B7B4A8',
+  Gold: '#D7B56D',
+  Diamond: '#AA91F5',
+  Elite: '#DCFC54',
+}
 
 export function BrandMark({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`brand-lockup ${compact ? 'brand-lockup--compact' : ''}`} aria-label="DEATHBOUND">
-      <motion.svg
-        className="brand-mark"
-        viewBox="0 0 48 48"
-        role="img"
-        aria-label="Deathbound insignia"
-        initial={{ opacity: 0, rotate: -8 }}
-        animate={{ opacity: 1, rotate: 0 }}
-        transition={{ duration: 0.45 }}
-      >
-        <path className="brand-mark__frame" d="M24 2 44 14v20L24 46 4 34V14L24 2Z" />
-        <path className="brand-mark__core" d="M13 13h12c7 0 12 4 12 11s-5 11-12 11H13l6-6h6c3 0 5-2 5-5s-2-5-5-5h-6l-6-6Z" />
-        <path className="brand-mark__slash" d="m28 7 4 2-13 32-4-2L28 7Z" />
+    <div className={`brand-lockup ${compact ? 'brand-lockup--compact' : ''}`} aria-label="DEATHBOUND Blacksite">
+      <motion.svg className="brand-mark" viewBox="0 0 56 64" role="img" aria-label="Deathbound Blacksite insignia" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>
+        <path className="brand-mark__frame" d="M28 2 52 15v34L28 62 4 49V15L28 2Z" />
+        <path className="brand-mark__cut" d="M10 18h28l8 8v21L28 57 10 47V18Z" />
+        <path className="brand-mark__core" d="M18 16h10c10 0 17 6 17 16s-7 16-17 16H18l7-8h4c5 0 8-3 8-8s-3-8-8-8h-4l-7-8Z" />
+        <path className="brand-mark__slash" d="m31 7 6 3-17 47-6-3L31 7Z" />
       </motion.svg>
-      <div className="brand-copy">
-        <span className="brand-name">DEATHBOUND</span>
-        {!compact && <span className="brand-subtitle">Competitive Intelligence</span>}
-      </div>
+      {!compact && <div className="brand-copy"><span className="brand-name">DEATHBOUND</span><span className="brand-subtitle">Blacksite intelligence</span></div>}
     </div>
   )
 }
 
-export function RankEmblem({ className = '' }: { className?: string }) {
+export function RankEmblem({ tier, size = 'medium', label = true }: { tier: SkillTier; size?: 'small' | 'medium' | 'large'; label?: boolean }) {
+  const gradientId = `rank-${useId().replace(/:/g, '')}`
+  const color = tierColor[tier]
+  const complexity = ['Bronze', 'Silver', 'Gold', 'Diamond', 'Elite'].indexOf(tier) + 1
   return (
-    <motion.svg
-      className={`rank-emblem ${className}`}
-      viewBox="0 0 180 210"
-      role="img"
-      aria-label="Apex tier competitive emblem"
-      initial={{ opacity: 0, scale: 0.88 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.55, delay: 0.15 }}
-    >
-      <defs>
-        <linearGradient id="goldEdge" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#FFF0B8" />
-          <stop offset="0.48" stopColor="#E7BD71" />
-          <stop offset="1" stopColor="#8A6430" />
-        </linearGradient>
-        <linearGradient id="darkCore" x1="0" x2="0" y1="0" y2="1">
-          <stop stopColor="#243243" />
-          <stop offset="1" stopColor="#0A0D13" />
-        </linearGradient>
-      </defs>
-      <path className="emblem-wing" d="M9 58 53 28l13 15-32 26 25 12-10 18L9 80Z" />
-      <path className="emblem-wing" d="m171 58-44-30-13 15 32 26-25 12 10 18 40-19Z" />
-      <path fill="url(#darkCore)" stroke="url(#goldEdge)" strokeWidth="5" d="m90 15 48 34-9 86-39 54-39-54-9-86 48-34Z" />
-      <path fill="none" stroke="#E7BD71" strokeOpacity=".36" d="m90 30 33 24-8 74-25 40-25-40-8-74 33-24Z" />
-      <path fill="url(#goldEdge)" d="m90 45 27 72-27-15-27 15 27-72Z" />
-      <path fill="#111821" d="m90 65 9 36-9-6-9 6 9-36Z" />
-      <path className="emblem-glyph" d="m54 147-24 16 36 11m60-27 24 16-36 11" />
-      <circle cx="90" cy="141" r="4" fill="#F1EEE6" />
-    </motion.svg>
+    <motion.div className={`rank-insignia rank-insignia--${size}`} initial={{ opacity: 0, scale: .88, rotate: -3 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: .38 }}>
+      <svg viewBox="0 0 140 160" role="img" aria-label={`${tier} competitive rank insignia`}>
+        <defs>
+          <linearGradient id={gradientId} x1="0" x2="1" y1="0" y2="1">
+            <stop stopColor="#F1ECDD" stopOpacity=".88" />
+            <stop offset=".32" stopColor={color} />
+            <stop offset="1" stopColor={color} stopOpacity=".48" />
+          </linearGradient>
+        </defs>
+        {complexity >= 3 && <path className="rank-wing" style={{ stroke: color }} d="M9 52 41 29l10 15-22 17 18 9-9 17L9 71Zm122 0L99 29 89 44l22 17-18 9 9 17 29-16Z" />}
+        {complexity >= 4 && <path className="rank-orbit" style={{ stroke: color }} d="M20 103 4 119l38 13m78-29 16 16-38 13" />}
+        <path className="rank-shield" style={{ stroke: `url(#${gradientId})` }} d="m70 9 39 25-7 74-32 42-32-42-7-74L70 9Z" />
+        <path className="rank-shield-inner" style={{ stroke: color }} d="m70 24 25 17-6 59-19 29-19-29-6-59 25-17Z" />
+        <path className="rank-spire" style={{ fill: `url(#${gradientId})` }} d="m70 36 21 69-21-17-21 17 21-69Z" />
+        <path className="rank-void" d="m70 57 7 31-7-7-7 7 7-31Z" />
+        {complexity >= 2 && <path className="rank-chevron" style={{ stroke: color }} d="m52 116 18 21 18-21" />}
+        {complexity >= 5 && <><circle cx="70" cy="16" r="4" fill={color} /><path className="rank-crown" style={{ stroke: color }} d="m49 22 7-14 14 9L84 8l7 14" /></>}
+      </svg>
+      {label && <span style={{ color }}>{tier}</span>}
+    </motion.div>
   )
 }
 
-export function MiniTierMark({ tier }: { tier: string }) {
-  return (
-    <span className={`mini-tier mini-tier--${tier.toLowerCase()}`} aria-hidden="true">
-      <i />
-    </span>
-  )
+export function MiniTierMark({ tier }: { tier: SkillTier }) {
+  return <RankEmblem tier={tier} size="small" label={false} />
 }

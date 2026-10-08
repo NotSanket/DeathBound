@@ -1,202 +1,126 @@
-import { Activity, ArrowDownUp, Award, CalendarDays, Clock3, Crosshair, MapPinned, Target, TrendingUp, Users } from 'lucide-react'
-import { motion } from 'motion/react'
+import { Activity, ArrowDownUp, ArrowLeft, ArrowRight, Award, CalendarDays, Clock3, Crosshair, Database, MapPinned, Radio, Target, Trophy, Users } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import {
-  dashboardTotals,
-  getParticipantsForTeam,
-  getPlayer,
-  getTeamsForMatch,
-  leaderboard,
-  matches,
-  ratingHistory,
-} from '../data/demoData'
+import { dashboardTotals, getLeaderboardPlayer, getParticipantsForTeam, getPlayer, getPlayerTrend, getTeamsForMatch, getTopEliminator, leaderboard, matches, participants } from '../data/demoData'
 import type { LeaderboardEntry, Match } from '../data/models'
-import { MiniTierMark, RankEmblem } from './Brand'
-import { AnimatedNumber, PanelHeader, TacticalPanel } from './Primitives'
+import { MiniTierMark } from './Brand'
+import { AnimatedNumber } from './Primitives'
 
 const formatDuration = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
-const formatDate = (date: string) => new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit' }).format(new Date(date)).toUpperCase()
+const formatDate = (date: string) => new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(date)).toUpperCase()
 
-export function MetricStrip() {
+export function TelemetryBand() {
   const metrics = [
-    { label: 'Registered players', value: dashboardTotals.players, code: 'PLR', accent: 'intel', icon: Users },
-    { label: 'Matches recorded', value: dashboardTotals.matches, code: 'MAT', accent: 'mint', icon: Target },
-    { label: 'Total eliminations', value: dashboardTotals.eliminations, code: 'ELM', accent: 'coral', icon: Crosshair },
+    { label: 'Registered operators', value: dashboardTotals.players, code: 'PLR', icon: Users },
+    { label: 'Verified matches', value: dashboardTotals.matches, code: 'MAT', icon: Database },
+    { label: 'Recorded eliminations', value: dashboardTotals.eliminations, code: 'ELM', icon: Crosshair },
   ]
   return (
-    <section className="metric-strip" aria-label="Arena telemetry">
-      {metrics.map(({ label, value, code, accent, icon: Icon }, index) => (
-        <motion.div className={`metric-cell accent-${accent}`} key={label} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.08 }}>
-          <div className="metric-cell__meta"><Icon size={14} /><span>{code}</span></div>
-          <strong><AnimatedNumber value={value} /></strong>
-          <span>{label}</span>
-        </motion.div>
-      ))}
-      <div className="metric-cell metric-cell--leader accent-gold">
-        <div className="metric-cell__meta"><Award size={14} /><span>RANK 01</span></div>
-        <strong>{dashboardTotals.leader.username}</strong>
-        <span>Highest-ranked competitor</span>
-      </div>
+    <section className="telemetry-band" aria-label="Arena telemetry">
+      <div className="telemetry-band__lead"><span>01 // Archive scope</span><strong>Operational telemetry</strong></div>
+      {metrics.map(({ label, value, code, icon: Icon }, index) => <motion.div className="telemetry-cell" key={code} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * .06 }}><span><Icon size={14} />{code}</span><strong><AnimatedNumber value={value} /></strong><small>{label}</small></motion.div>)}
+      <div className="telemetry-prime"><span><Trophy size={14} /> Prime seed</span><strong>{dashboardTotals.leader.username}</strong><small>{dashboardTotals.leader.rating} SR // {dashboardTotals.leader.tier}</small></div>
     </section>
   )
 }
 
-function PlayerRow({ entry, match, isMvp }: { entry: ReturnType<typeof getParticipantsForTeam>[number]; match: Match; isMvp: boolean }) {
-  const player = getPlayer(entry.playerId)
+function CombatantRow({ match, playerId, kills, deaths, assists, maxKills, isMvp, onInspect }: { match: Match; playerId: string; kills: number; deaths: number; assists: number; maxKills: number; isMvp: boolean; onInspect: (playerId: string) => void }) {
+  const player = getPlayer(playerId)
+  const ranked = getLeaderboardPlayer(playerId)
   return (
-    <motion.div className={`score-player ${isMvp ? 'is-mvp' : ''}`} whileHover={{ x: 3 }} transition={{ duration: 0.15 }}>
-      <span className="player-avatar">{player.username.slice(0, 2)}</span>
-      <div className="score-player__identity">
-        <strong>{player.username}</strong>
-        <span>{player.callsign}{isMvp ? ' // MATCH MVP' : ''}</span>
-      </div>
-      <span>{entry.kills}</span><span>{entry.deaths}</span><span>{entry.assists}</span>
-      <span className="score-player__kd">{(entry.kills / Math.max(entry.deaths, 1)).toFixed(2)}</span>
+    <motion.button className={`combatant-row ${isMvp ? 'is-mvp' : ''}`} onClick={() => onInspect(playerId)} whileHover={{ x: 4 }} aria-label={`Inspect ${player.username} player dossier`}>
+      <span className="combatant-id">{player.username.slice(0, 2)}</span>
+      <span className="combatant-name"><strong>{player.username}</strong><small>{player.callsign} // {ranked.tier}{isMvp ? ' // MVP' : ''}</small><i><b style={{ width: `${(kills / maxKills) * 100}%` }} /></i></span>
+      <span><small>K</small><strong>{kills}</strong></span><span><small>D</small><strong>{deaths}</strong></span><span><small>A</small><strong>{assists}</strong></span><span className="combatant-ratio"><small>K/D</small><strong>{(kills / Math.max(deaths, 1)).toFixed(2)}</strong></span>
       <span className="sr-only">{match.id}</span>
-    </motion.div>
+    </motion.button>
   )
 }
 
-export function MatchScoreboard({ match }: { match: Match }) {
+export function ArenaScoreboard({ match, onPrevious, onNext, onInspectPlayer }: { match: Match; onPrevious: () => void; onNext: () => void; onInspectPlayer: (playerId: string) => void }) {
   const teams = getTeamsForMatch(match.id)
   const winner = teams.find((team) => team.result === 'victory')!
+  const matchParticipants = participants.filter((entry) => entry.matchId === match.id)
+  const maxKills = Math.max(...matchParticipants.map((entry) => entry.kills))
   return (
-    <TacticalPanel className="scoreboard" label={`Featured match ${match.id}`}>
-      <div className="scoreboard-topline">
-        <div><span className="live-pip" /> Finalized encounter</div>
-        <span>{match.id} // VERIFIED</span>
+    <section className="arena-scoreboard" aria-label={`Featured match ${match.id}`}>
+      <div className="arena-scoreboard__top">
+        <div><span>01 // The arena</span><strong>Final encounter report</strong></div>
+        <div className="match-cycle"><button onClick={onPrevious} aria-label="Previous recorded match"><ArrowLeft size={16} /></button><span>{match.id}<small>{matches.findIndex((entry) => entry.id === match.id) + 1} / {matches.length}</small></span><button onClick={onNext} aria-label="Next recorded match"><ArrowRight size={16} /></button></div>
       </div>
-      <div className="match-stage">
-        <div className="team-title team-title--a">
-          <span>Attacking formation</span><strong>{teams[0]?.name}</strong><em>{teams[0]?.result}</em>
-        </div>
-        <div className="central-score">
-          <div className="score-numbers"><motion.strong key={`${match.id}-a`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{teams[0]?.score}</motion.strong><span>:</span><motion.strong key={`${match.id}-b`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{teams[1]?.score}</motion.strong></div>
-          <div className="match-location"><MapPinned size={14} />{match.map}</div>
-          <div className="match-time"><Clock3 size={12} /> {formatDuration(match.durationSeconds)}</div>
-        </div>
-        <div className="team-title team-title--b">
-          <span>Defensive formation</span><strong>{teams[1]?.name}</strong><em>{teams[1]?.result}</em>
-        </div>
-      </div>
-      <div className="winner-ribbon"><span>Winning unit</span><strong>{winner.name}</strong><i /></div>
-      <div className="score-tables">
-        {teams.map((team) => (
-          <div className={`team-table team-table--${team.result}`} key={team.id}>
-            <div className="score-head"><span>Combatant</span><span>K</span><span>D</span><span>A</span><span>K/D</span></div>
-            {getParticipantsForTeam(match.id, team.id).map((entry) => (
-              <PlayerRow key={entry.playerId} entry={entry} match={match} isMvp={entry.playerId === match.mvpPlayerId} />
-            ))}
+      <AnimatePresence mode="wait">
+        <motion.div className="arena-scoreboard__content" key={match.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: .2 }}>
+          <div className="arena-versus">
+            <div className={`versus-team ${teams[0].result === 'victory' ? 'is-winner' : ''}`}><span>Attacking formation</span><strong>{teams[0].name}</strong><em>{teams[0].result}</em></div>
+            <div className="versus-score"><div><motion.strong key={`${match.id}-left`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{teams[0].score}</motion.strong><i>:</i><motion.strong key={`${match.id}-right`} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{teams[1].score}</motion.strong></div><span><MapPinned size={14} />{match.map}</span><small><Clock3 size={12} />{formatDuration(match.durationSeconds)} // COMPLETE</small></div>
+            <div className={`versus-team versus-team--right ${teams[1].result === 'victory' ? 'is-winner' : ''}`}><span>Defensive formation</span><strong>{teams[1].name}</strong><em>{teams[1].result}</em></div>
           </div>
-        ))}
-      </div>
-    </TacticalPanel>
-  )
-}
-
-export function PlayerSpotlight() {
-  const player = leaderboard[0]
-  const recent = ratingHistory.map((point) => point.rating)
-  const min = Math.min(...recent)
-  const max = Math.max(...recent)
-  return (
-    <TacticalPanel className="spotlight" label="Elite player spotlight">
-      <PanelHeader index="02" title="Elite player" aside={<span>Season 01</span>} />
-      <div className="spotlight-emblem-wrap"><RankEmblem /></div>
-      <div className="spotlight-rank"><span>Global position</span><strong>#0{player.rank}</strong></div>
-      <div className="spotlight-name"><span>{player.callsign}</span><h3>{player.username}</h3><div><MiniTierMark tier={player.tier} /> {player.tier} // Prime</div></div>
-      <div className="spotlight-stats">
-        <div><span>Rating</span><strong>{player.rating}</strong></div>
-        <div><span>K / D</span><strong>{player.kd.toFixed(2)}</strong></div>
-        <div><span>Win rate</span><strong>{player.winRate}%</strong></div>
-      </div>
-      <div className="trend-block">
-        <div><span>Recent performance vector</span><strong><TrendingUp size={13} /> +{max - min} SR</strong></div>
-        <div className="spark-bars" aria-label="Rising recent performance trend">
-          {recent.map((value, index) => <i key={value} style={{ height: `${24 + ((value - min) / Math.max(max - min, 1)) * 76}%` }}><span>Week {index + 1}</span></i>)}
-        </div>
-      </div>
-    </TacticalPanel>
+          <div className="winner-declaration"><span>Winning formation</span><strong>{winner.name}</strong><i /><span>Match MVP</span><button onClick={() => onInspectPlayer(match.mvpPlayerId)}>{getPlayer(match.mvpPlayerId).username}<Award size={13} /></button></div>
+          <div className="team-scoreboards">
+            {teams.map((team) => <div className={`team-roster team-roster--${team.result}`} key={team.id}><header><span>{team.side === 'A' ? 'ATK' : 'DEF'}</span><strong>{team.name}</strong><em>{team.result}</em></header>{getParticipantsForTeam(match.id, team.id).map((entry) => <CombatantRow key={entry.playerId} match={match} {...entry} maxKills={maxKills} isMvp={entry.playerId === match.mvpPlayerId} onInspect={onInspectPlayer} />)}</div>)}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      <footer><span><Target size={13} /> Combat performance bars represent eliminations within this match.</span><span>Demo record // relational source</span></footer>
+    </section>
   )
 }
 
 type SortKey = 'rating' | 'winRate' | 'kd'
-export function Leaderboard() {
+export function BlacksiteLeaderboard({ selectedPlayerId, onInspect }: { selectedPlayerId: string | null; onInspect: (id: string) => void }) {
   const [sort, setSort] = useState<SortKey>('rating')
   const ranked = useMemo(() => [...leaderboard].sort((a, b) => b[sort] - a[sort]).slice(0, 5), [sort])
   return (
-    <TacticalPanel className="leaderboard-panel" label="Competitive leaderboard">
-      <PanelHeader index="03" title="Competitive leaderboard" aside={<div className="sort-control"><ArrowDownUp size={12} /><span>Sort</span>{(['rating', 'winRate', 'kd'] as SortKey[]).map((key) => <button className={sort === key ? 'is-selected' : ''} onClick={() => setSort(key)} key={key}>{key === 'winRate' ? 'Win %' : key.toUpperCase()}</button>)}</div>} />
-      <div className="leaderboard-head"><span>Pos</span><span>Competitor</span><span>Tier</span><span>Rating</span><span>Win</span><span>K/D</span></div>
-      <div className="leaderboard-body">
-        {ranked.map((player, index) => <LeaderboardRow player={player} displayPosition={index + 1} key={player.id} />)}
-      </div>
-    </TacticalPanel>
+    <section className="blacksite-leaderboard" aria-label="Competitive leaderboard">
+      <header className="section-cap"><div><span>04</span><h2>Competitive order</h2></div><div className="sort-control"><ArrowDownUp size={14} />{(['rating', 'winRate', 'kd'] as SortKey[]).map((key) => <button key={key} className={sort === key ? 'is-selected' : ''} onClick={() => setSort(key)}>{key === 'winRate' ? 'WIN %' : key.toUpperCase()}</button>)}</div></header>
+      <div className="leader-grid-head"><span>Seed</span><span>Operator</span><span>Clearance</span><span>SR</span><span>Win</span><span>K/D</span></div>
+      <div className="leader-list">{ranked.map((player, index) => <LeaderboardRow key={player.id} player={player} displayPosition={index + 1} selected={player.id === selectedPlayerId} onInspect={onInspect} />)}</div>
+    </section>
   )
 }
 
-function LeaderboardRow({ player, displayPosition }: { player: LeaderboardEntry; displayPosition: number }) {
-  return (
-    <motion.div className={`leader-row ${player.rank === 1 ? 'is-top' : ''}`} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ x: 3 }}>
-      <span className="leader-pos">{String(displayPosition).padStart(2, '0')}</span>
-      <div className="leader-player"><span>{player.username.slice(0, 2)}</span><div><strong>{player.username}</strong><small>{player.callsign}</small></div></div>
-      <span className="tier-cell"><MiniTierMark tier={player.tier} />{player.tier}</span>
-      <strong className="numeric">{player.rating}</strong><span className="numeric">{player.winRate}%</span><span className="numeric">{player.kd.toFixed(2)}</span>
-    </motion.div>
-  )
+function LeaderboardRow({ player, displayPosition, selected, onInspect }: { player: LeaderboardEntry; displayPosition: number; selected: boolean; onInspect: (id: string) => void }) {
+  return <motion.button className={`leader-row ${player.rank <= 3 ? `is-podium is-podium-${player.rank}` : ''} ${selected ? 'is-selected' : ''}`} layout onClick={() => onInspect(player.id)} aria-label={`Inspect ${player.username} player dossier`}><span className="leader-seed">{String(displayPosition).padStart(2, '0')}</span><span className="leader-identity"><i>{player.username.slice(0, 2)}</i><span><strong>{player.username}</strong><small>{player.callsign}</small></span></span><span className="leader-tier"><MiniTierMark tier={player.tier} /><strong>{player.tier}</strong></span><strong>{player.rating}</strong><span>{player.winRate}%</span><span>{player.kd.toFixed(2)}</span></motion.button>
 }
 
-type ChartMetric = 'kd' | 'rating'
-export function PerformanceChart() {
+type ChartMetric = 'rating' | 'kd' | 'winRate'
+export function CombatTelemetry() {
   const [metric, setMetric] = useState<ChartMetric>('rating')
-  const color = metric === 'rating' ? '#52D6C4' : '#97ABDA'
-  const domain = metric === 'rating' ? ['dataMin - 35', 'dataMax + 25'] : [0.8, 2]
+  const player = leaderboard[0]
+  const data = getPlayerTrend(player.id)
+  const config = {
+    rating: { label: 'Rating progression', unit: 'SR', color: '#DCFC54', value: player.rating, domain: ['dataMin - 25', 'dataMax + 20'] as [string, string] },
+    kd: { label: 'K/D trend', unit: 'K/D', color: '#FF6547', value: player.kd.toFixed(2), domain: [0.6, 2] as [number, number] },
+    winRate: { label: 'Win conversion', unit: '%', color: '#AA91F5', value: player.winRate, domain: [0, 100] as [number, number] },
+  }[metric]
   return (
-    <TacticalPanel className="chart-panel" label="Performance intelligence">
-      <PanelHeader index="04" title="Performance intelligence" aside={<div className="metric-switch" role="group" aria-label="Chart metric">{(['rating', 'kd'] as ChartMetric[]).map((key) => <button key={key} className={metric === key ? 'is-selected' : ''} onClick={() => setMetric(key)}>{key === 'rating' ? 'Rating progression' : 'K/D trend'}</button>)}</div>} />
-      <div className="chart-context"><span><i style={{ background: color }} />{metric === 'rating' ? 'Skill rating' : 'Elimination ratio'}</span><strong>{metric === 'rating' ? leaderboard[0]?.rating : leaderboard[0]?.kd.toFixed(2)}</strong></div>
-      <div className="chart-wrap">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={ratingHistory} margin={{ top: 10, right: 8, left: -22, bottom: 0 }}>
-            <defs><linearGradient id={`chart-${metric}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity={0.28} /><stop offset="100%" stopColor={color} stopOpacity={0} /></linearGradient></defs>
-            <CartesianGrid stroke="#2A3543" strokeOpacity={0.58} vertical={false} />
-            <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#748091', fontSize: 10, fontFamily: 'Manrope' }} dy={8} />
-            <YAxis domain={domain} axisLine={false} tickLine={false} tick={{ fill: '#748091', fontSize: 10, fontFamily: 'Manrope' }} width={56} />
-            <Tooltip content={<ChartTooltip metric={metric} />} cursor={{ stroke: '#526170', strokeDasharray: '3 3' }} />
-            <Area type="monotone" dataKey={metric} stroke={color} strokeWidth={2.4} fill={`url(#chart-${metric})`} activeDot={{ r: 5, fill: '#0A0D13', stroke: color, strokeWidth: 2 }} animationDuration={500} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </TacticalPanel>
+    <section className="combat-telemetry" aria-label="Combat telemetry lab">
+      <header className="section-cap"><div><span>05</span><h2>Combat telemetry lab</h2></div><div className="metric-switch" role="group" aria-label="Telemetry metric">{(['rating', 'kd', 'winRate'] as ChartMetric[]).map((key) => <button key={key} className={metric === key ? 'is-selected' : ''} onClick={() => setMetric(key)}>{key === 'winRate' ? 'WIN %' : key.toUpperCase()}</button>)}</div></header>
+      <div className="telemetry-subhead"><div><span>Prime seed analysis</span><strong>{player.username}</strong></div><div><span>{config.label}</span><strong style={{ color: config.color }}>{config.value}<small>{config.unit}</small></strong></div></div>
+      <div className="combat-chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data} margin={{ top: 12, right: 12, left: -12, bottom: 0 }}><defs><linearGradient id={`blacksite-${metric}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor={config.color} stopOpacity={.26} /><stop offset="1" stopColor={config.color} stopOpacity={0} /></linearGradient></defs><CartesianGrid stroke="#45453F" strokeOpacity={.45} vertical={false} strokeDasharray="2 5" /><XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: '#858278', fontSize: 10, fontFamily: 'IBM Plex Mono' }} /><YAxis domain={config.domain} axisLine={false} tickLine={false} width={48} tick={{ fill: '#858278', fontSize: 10, fontFamily: 'IBM Plex Mono' }} /><Tooltip content={<TelemetryTooltip metric={metric} unit={config.unit} />} cursor={{ stroke: config.color, strokeOpacity: .5 }} /><Area type="monotone" dataKey={metric} stroke={config.color} strokeWidth={2.5} fill={`url(#blacksite-${metric})`} activeDot={{ r: 5, fill: '#0D0D0B', stroke: config.color, strokeWidth: 2 }} animationDuration={360} /></AreaChart></ResponsiveContainer></div>
+      <footer>Derived cumulatively from {data.length} recorded 3v3 appearances.</footer>
+    </section>
   )
 }
 
-function ChartTooltip({ active, payload, label, metric }: { active?: boolean; payload?: Array<{ value: number }>; label?: string; metric: ChartMetric }) {
+function TelemetryTooltip({ active, payload, label, metric, unit }: { active?: boolean; payload?: Array<{ value: number }>; label?: string; metric: ChartMetric; unit: string }) {
   if (!active || !payload?.length) return null
-  return <div className="chart-tooltip"><span>{label} // SAMPLE</span><strong>{metric === 'kd' ? payload[0].value.toFixed(2) : payload[0].value}</strong><small>{metric === 'kd' ? 'K/D RATIO' : 'SKILL RATING'}</small></div>
+  return <div className="telemetry-tooltip"><span>{label} // {metric.toUpperCase()}</span><strong>{metric === 'kd' ? payload[0].value.toFixed(2) : payload[0].value}<small>{unit}</small></strong></div>
 }
 
-export function MatchActivity({ selectedId, onSelect }: { selectedId: string; onSelect: (match: Match) => void }) {
+export function CombatActivity({ selectedId, onSelect }: { selectedId: string; onSelect: (match: Match) => void }) {
+  const records = matches.map((match) => {
+    const teams = getTeamsForMatch(match.id)
+    const winner = teams.find((team) => team.result === 'victory')!
+    const top = getTopEliminator(match.id)
+    return { match, winner, top, mvp: getPlayer(match.mvpPlayerId) }
+  })
   return (
-    <TacticalPanel className="activity-panel" label="Recent arena activity">
-      <PanelHeader index="05" title="Recent arena activity" aside={<span className="activity-status"><Activity size={12} /> Local record</span>} />
-      <div className="activity-head"><span>Match</span><span>Map / date</span><span>Score</span><span>Result</span><span>MVP</span></div>
-      <div className="activity-list">
-        {matches.slice(0, 5).map((match) => {
-          const teams = getTeamsForMatch(match.id)
-          const winner = teams.find((team) => team.result === 'victory')!
-          return (
-            <button className={`activity-row ${selectedId === match.id ? 'is-selected' : ''}`} onClick={() => onSelect(match)} key={match.id} aria-pressed={selectedId === match.id}>
-              <span><i />{match.id}</span>
-              <span><strong>{match.map}</strong><small><CalendarDays size={10} />{formatDate(match.playedAt)}</small></span>
-              <span className="activity-score">{teams[0]?.score}<em>:</em>{teams[1]?.score}</span>
-              <span className="result-label">{winner.name}</span>
-              <span className="activity-mvp"><Award size={12} />{getPlayer(match.mvpPlayerId).username}</span>
-            </button>
-          )
-        })}
-      </div>
-    </TacticalPanel>
+    <section className="combat-activity" aria-label="Competitive activity feed">
+      <header className="section-cap"><div><span>06</span><h2>Combat record</h2></div><span className="archive-label"><Radio size={13} /> Archived events</span></header>
+      <div className="activity-timeline">{records.map(({ match, winner, top, mvp }) => <button key={match.id} className={selectedId === match.id ? 'is-selected' : ''} onClick={() => onSelect(match)} aria-pressed={selectedId === match.id}><span className="activity-time"><CalendarDays size={12} />{formatDate(match.playedAt)}</span><span className="activity-node"><i /></span><span className="activity-copy"><strong>{winner.name} secured {match.map}</strong><small>{match.id} // {getTeamsForMatch(match.id).map((team) => team.score).join('–')} final // {mvp.username} awarded MVP // {getPlayer(top.playerId).username} {top.kills} eliminations</small></span><ArrowRight size={15} /></button>)}</div>
+      <footer><Activity size={13} /> Historical demo events only. No live connection is active.</footer>
+    </section>
   )
 }

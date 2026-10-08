@@ -35,13 +35,29 @@ export interface MatchParticipant {
   assists: number
 }
 
-export interface RatingPoint {
+export interface PerformancePoint {
   label: string
   kd: number
   rating: number
+  winRate: number
+  matchId: string
 }
 
-export type SkillTier = 'Apex' | 'Vanguard' | 'Sentinel' | 'Operator'
+export type SkillTier = 'Bronze' | 'Silver' | 'Gold' | 'Diamond' | 'Elite'
+
+export interface TierDefinition {
+  id: SkillTier
+  threshold: number
+  description: string
+  color: string
+}
+
+export interface ArenaMap {
+  name: string
+  code: string
+  sector: string
+  configuration: 'split' | 'ring' | 'cross' | 'vault' | 'spine'
+}
 
 export interface LeaderboardEntry extends Player {
   rank: number

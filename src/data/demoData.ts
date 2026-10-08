@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, Match, MatchParticipant, MatchTeam, Player, RatingPoint, SkillTier } from './models'
+import type { ArenaMap, LeaderboardEntry, Match, MatchParticipant, MatchTeam, PerformancePoint, Player, SkillTier, TierDefinition } from './models'
 
 export const players: Player[] = [
   { id: 'p01', username: 'NOCTURNE', callsign: 'Mira Vale', countryCode: 'IN', joinedAt: '2026-01-12' },
@@ -54,11 +54,24 @@ export const participants: MatchParticipant[] = rows.map(([matchId, teamId, play
   matchId, teamId, playerId, kills, deaths, assists,
 }))
 
-const getTier = (rating: number): SkillTier => {
-  if (rating >= 1600) return 'Apex'
-  if (rating >= 1500) return 'Vanguard'
-  if (rating >= 1400) return 'Sentinel'
-  return 'Operator'
+export const tierDefinitions: TierDefinition[] = [
+  { id: 'Bronze', threshold: 0, description: 'Entry clearance for verified arena competitors.', color: '#B47B55' },
+  { id: 'Silver', threshold: 1350, description: 'Consistent combat fundamentals under pressure.', color: '#B7B4A8' },
+  { id: 'Gold', threshold: 1450, description: 'Advanced match impact and reliable conversion.', color: '#D7B56D' },
+  { id: 'Diamond', threshold: 1550, description: 'High-precision decision making across formations.', color: '#AA91F5' },
+  { id: 'Elite', threshold: 1625, description: 'Blacksite command tier. Exceptional competitive output.', color: '#DCFC54' },
+]
+
+export const arenaMaps: ArenaMap[] = [
+  { name: 'Kestrel Array', code: 'KST-07', sector: 'Orbital transfer lattice', configuration: 'cross' },
+  { name: 'Sunder Vault', code: 'SNV-12', sector: 'Subsurface containment', configuration: 'vault' },
+  { name: 'Halcyon Divide', code: 'HLC-04', sector: 'Polar extraction line', configuration: 'split' },
+  { name: 'Obsidian Relay', code: 'OBS-19', sector: 'Signal interception grid', configuration: 'ring' },
+  { name: 'Pale Meridian', code: 'PLM-03', sector: 'Desert transit spine', configuration: 'spine' },
+]
+
+export const getTier = (rating: number): SkillTier => {
+  return [...tierDefinitions].reverse().find((tier) => rating >= tier.threshold)?.id ?? 'Bronze'
 }
 
 export const leaderboard: LeaderboardEntry[] = players
@@ -86,18 +99,39 @@ export const leaderboard: LeaderboardEntry[] = players
   .sort((a, b) => b.rating - a.rating)
   .map((entry, index) => ({ ...entry, rank: index + 1 }))
 
-export const ratingHistory: RatingPoint[] = [
-  { label: 'W-06', kd: 1.21, rating: 1442 },
-  { label: 'W-05', kd: 1.34, rating: 1488 },
-  { label: 'W-04', kd: 1.29, rating: 1514 },
-  { label: 'W-03', kd: 1.51, rating: 1572 },
-  { label: 'W-02', kd: 1.62, rating: 1625 },
-  { label: 'NOW', kd: leaderboard[0]?.kd ?? 1.7, rating: leaderboard[0]?.rating ?? 1680 },
-]
-
 export const getPlayer = (id: string) => players.find((player) => player.id === id)!
 export const getTeamsForMatch = (matchId: string) => matchTeams.filter((team) => team.matchId === matchId).sort((a, b) => a.side.localeCompare(b.side))
 export const getParticipantsForTeam = (matchId: string, teamId: string) => participants.filter((entry) => entry.matchId === matchId && entry.teamId === teamId).sort((a, b) => b.kills - a.kills)
+export const getMap = (name: string) => arenaMaps.find((map) => map.name === name)!
+export const getLeaderboardPlayer = (id: string) => leaderboard.find((player) => player.id === id)!
+
+export const getPlayerMatches = (playerId: string) => matches
+  .filter((match) => participants.some((entry) => entry.matchId === match.id && entry.playerId === playerId))
+  .sort((a, b) => new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime())
+
+export const getPlayerTrend = (playerId: string): PerformancePoint[] => {
+  const chronological = [...getPlayerMatches(playerId)].reverse()
+  let kills = 0
+  let deaths = 0
+  let wins = 0
+  return chronological.map((match, index) => {
+    const record = participants.find((entry) => entry.matchId === match.id && entry.playerId === playerId)!
+    kills += record.kills
+    deaths += record.deaths
+    if (matchTeams.find((team) => team.id === record.teamId)?.result === 'victory') wins += 1
+    return {
+      label: `M${index + 1}`,
+      matchId: match.id,
+      kd: Number((kills / Math.max(deaths, 1)).toFixed(2)),
+      rating: 1200 + wins * 52 + kills * 3 - deaths,
+      winRate: Math.round((wins / (index + 1)) * 100),
+    }
+  })
+}
+
+export const getTopEliminator = (matchId: string) => [...participants]
+  .filter((entry) => entry.matchId === matchId)
+  .sort((a, b) => b.kills - a.kills)[0]
 
 export const dashboardTotals = {
   players: players.length,
@@ -109,5 +143,9 @@ export const dashboardTotals = {
 export const validateDemoData = () => matches.every((match) => {
   const teams = getTeamsForMatch(match.id)
   const matchPlayers = participants.filter((entry) => entry.matchId === match.id)
-  return teams.length === 2 && teams.every((team) => getParticipantsForTeam(match.id, team.id).length === 3) && new Set(matchPlayers.map((entry) => entry.playerId)).size === 6
+  const teamIds = new Set(teams.map((team) => team.id))
+  const nonnegative = matchPlayers.every((entry) => entry.kills >= 0 && entry.deaths >= 0 && entry.assists >= 0)
+  const validReferences = matchPlayers.every((entry) => teamIds.has(entry.teamId) && players.some((player) => player.id === entry.playerId))
+  const results = teams.filter((team) => team.result === 'victory').length === 1 && teams.filter((team) => team.result === 'defeat').length === 1
+  return teams.length === 2 && teams.every((team) => getParticipantsForTeam(match.id, team.id).length === 3) && new Set(matchPlayers.map((entry) => entry.playerId)).size === 6 && nonnegative && validReferences && results
 })
